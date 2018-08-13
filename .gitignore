@@ -1,0 +1,7 @@
+/vendor/
+/logs/*
+!/logs/.gitkeep
+/var/*
+!/var/.gitkeep
+.idea
+/config/config.php

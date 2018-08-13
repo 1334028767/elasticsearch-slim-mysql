@@ -1,0 +1,36 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: imhui
+ * Date: 2018/6/25
+ * Time: 15:52
+ */
+
+require_once __DIR__ . '/../vendor/autoload.php';
+use Symfony\Component\Console\Application;
+use Slim\App;
+
+$settings = require __DIR__ . '/../config/config.php';
+$app = new App($settings);
+require __DIR__ . '/../src/dependencies.php';
+
+$console = new Application();
+
+$commandPath = __DIR__ . '/../src/App/Command';
+$files = scandir($commandPath);
+foreach ($files as $filename) {
+	if(stripos(strrev($filename), strrev('Command.php')) === 0) {
+		$className = 'App\\Command\\' . basename($filename, '.php');
+
+		$reflectionClass = new ReflectionClass($className);
+		if ($reflectionClass->isAbstract()) {
+			continue;
+		}
+
+		$command = new $className();
+		$command->setContainer($app->getContainer());
+		$console->add($command);
+	}
+}
+
+$console->run();
